@@ -2,15 +2,6 @@ from sudoku_solver import SudokuSolver
 import csv
 import random
 
-def fix_start(start):
-    res = ''
-    for c in start:
-        if c == '.':
-            res += '0'
-        else:
-            res += c
-    return res
-
 successes = 0
 total = 0
 cutoff = 10000
@@ -22,7 +13,7 @@ with open('sudoku-3m.csv', 'r') as file:
         if start == 'puzzle':
             continue
 
-        solver = SudokuSolver(fix_start(start), None, True)
+        solver = SudokuSolver(start, None, True)
         if solver.solve():
             successes += 1
             counts = solver.get_strategy_counts()
