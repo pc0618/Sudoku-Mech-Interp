@@ -53,6 +53,20 @@ class SudokuSolver:
             self.swordfish,
             # Add more strategies here as needed
         ]
+
+        self.moves = []  # List to store moves in order
+        self.strategy_map = {
+            "Initial": 0,             # For initially filled cells
+            "Naked Single": 1,
+            "Hidden Single (Row)": 2,
+            "Hidden Single (Column)": 3,
+            "Hidden Single (Block)": 4,
+            "Naked Pair": 5,
+            "Hidden Pair": 6,
+            "Pointing Pair": 7,
+            "X-Wing": 8,
+            "Swordfish": 9
+        }
     
     def initialize_log(self):
         with open(self.log_file, 'w') as f:
@@ -467,52 +481,12 @@ class SudokuSolver:
         print()
     
     def log_step(self, strategy: str, num: int, row: int, col: int):
+
+        self.moves.append((row, col, num, self.strategy_map[strategy]))
+
         if self.log_file:
             self.log(f"{strategy}: Placed {num} in Cell ({row+1}, {col+1})")
             with open(self.log_file, 'a') as f:
                 self.log_grid(f)
 
-def main():
-    parser = argparse.ArgumentParser(description="Sudoku Solver using Human-like Strategies")
-    parser.add_argument("puzzle", help="81-character puzzle string (use '0' or '.' for empty cells)")
-    parser.add_argument("--log", metavar="LOG_FILE", help="Optional log file to store intermediate steps")
-    parser.add_argument("--random-order", action="store_true", help="Apply strategies in random order")
-    args = parser.parse_args()
-
-    puzzle = args.puzzle
-    log_file = args.log
-    random_order = args.random_order
-
-    try:
-        solver = SudokuSolver(puzzle, log_file, random_order)
-    except ValueError as ve:
-        print(f"Error: {ve}")
-        return
-
-    print("Initial Puzzle:")
-    solver.display()
-
-    if solver.solve():
-        print("Solved Puzzle:")
-        solver.display()
-    else:
-        print("Could not solve the puzzle with the implemented strategies.")
-        print("Current state:")
-        solver.display()
-
-    # Print the final state as a string
-    final_state = solver.get_final_state()
-    print(f"Final State as String: {final_state}")
-
-    # Print strategy counts
-    strategy_counts = solver.get_strategy_counts()
-    print("Strategy Usage Counts:")
-    for strategy, count in strategy_counts.items():
-        print(f"  {strategy}: {count}")
-
-    if log_file:
-        print(f"Intermediate steps have been logged to '{log_file}'.")
-
-if __name__ == "__main__":
-    main()
 
